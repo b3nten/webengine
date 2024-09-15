@@ -1,0 +1,36 @@
+version: '3'
+
+tasks:
+  dev:
+    deps:
+      - devSpa
+      - devBackend
+    silent: true
+  codegen:
+    cmds:
+      - |
+        {{if eq OS "windows"}}
+          echo "Running Windows codegen"
+          sqlc generate
+          powershell -ExecutionPolicy Bypass -File ./codegen_windows.ps1
+        {{else if eq OS "darwin"}}
+          echo "Running macOS codegen"
+          sqlc generate
+          chmod +x codegen_mac.sh
+          ./codegen_mac.sh
+        {{else if eq OS "linux"}}
+          echo "Running Linux codegen"
+          sqlc generate
+          chmod +x codegen_linux.sh
+          ./codegen_linux.sh
+        {{else}}
+          echo "Unsupported operating system"
+          exit 1
+        {{end}}
+    silent: true
+  devSpa:
+    cmds:
+      - cd web && pnpm run dev
+  devBackend:
+    cmds:
+      - go run main.go --port 3000
