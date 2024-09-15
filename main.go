@@ -65,7 +65,14 @@ func main() {
 
 	fmt.Printf("Server is running on port %d\n", port)
 
-	if err := http.ListenAndServe(fmt.Sprintf("127.0.0.1:%d", port), r); err != nil {
+	var prefix string
+	if isProd {
+		prefix = ""
+	} else {
+		prefix = "127.0.0.1"
+	}
+
+	if err := http.ListenAndServe(fmt.Sprintf("%s:%d", prefix, port), r); err != nil {
 		panic(err)
 	}
 }
